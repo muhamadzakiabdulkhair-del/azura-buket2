@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pesanan Berhasil — Azura Buket</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Nunito:wght@300;400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#c0395e;--brand-dark:#8e1f3d;--brand-light:#e8729a;
+  --accent:#f5c0cc;--accent2:#fde8ec;--accent3:#fff0f4;
+  --bg:#fdf8f5;--card:#fff;--text:#2d1520;--muted:#9b6b7e;--border:#f0d0da;
+  --shadow:0 2px 16px rgba(192,57,94,.10);--shadow-lg:0 8px 40px rgba(192,57,94,.18);
+  --r:14px;--r-xl:20px;
+  --font-head:'Playfair Display',serif;--font-body:'Nunito',sans-serif;--font-script:'Dancing Script',cursive;
+  --green:#25d366;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+a{text-decoration:none;color:inherit}
+
+/* NAVBAR */
+.navbar{
+  background:var(--brand);padding:0 20px;height:60px;
+  display:flex;align-items:center;
+  box-shadow:0 2px 20px rgba(0,0,0,.2);
+}
+.navbar-brand{font-family:var(--font-head);font-weight:700;font-size:1.2rem;color:#fff;display:flex;align-items:center;gap:8px}
+.navbar-brand em{color:var(--accent2);font-style:italic}
+
+/* MAIN */
+.main{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:32px 16px 48px}
+
+.sukses-wrap{width:100%;max-width:600px;display:flex;flex-direction:column;gap:16px}
+
+/* CHECK ANIMATION */
+.check-section{text-align:center;padding:32px 20px 16px}
+.check-ring{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,var(--brand),var(--brand-light));
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both;
+  position:relative;
+}
+.check-ring::before{
+  content:'';position:absolute;inset:-5px;border-radius:50%;
+  border:3px solid var(--accent);animation:ringExpand .6s ease .3s both;
+}
+@keyframes popIn{0%{transform:scale(0);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes ringExpand{0%{opacity:0;transform:scale(.8)}100%{opacity:1;transform:scale(1)}}
+.check-icon{font-size:2.8rem;animation:fadeUp .3s ease .3s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.sukses-title{font-family:var(--font-script);font-size:2.2rem;color:var(--brand);margin-bottom:6px}
+.sukses-sub{font-size:.88rem;color:var(--muted);line-height:1.6}
+
+/* CARD */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow)}
+.card-header{
+  background:linear-gradient(135deg,var(--brand),var(--brand-light));
+  color:#fff;padding:13px 18px;
+  font-family:var(--font-head);font-weight:700;font-size:.9rem;
+  display:flex;align-items:center;gap:8px;
+}
+.card-body{padding:18px 20px}
+
+/* NO PESANAN */
+.no-pesanan-box{
+  background:var(--accent2);border:2px dashed var(--accent);
+  border-radius:14px;padding:16px 20px;text-align:center;margin-bottom:16px;
+}
+.no-pesanan-lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.no-pesanan-val{font-family:var(--font-head);font-size:1.5rem;font-weight:700;color:var(--brand);letter-spacing:.06em}
+.no-pesanan-copy{margin-top:6px}
+.btn-copy-no{
+  background:none;border:1px solid var(--brand);color:var(--brand);
+  border-radius:20px;padding:4px 14px;font-size:.73rem;font-weight:700;cursor:pointer;
+  font-family:var(--font-body);transition:all .2s;
+}
+.btn-copy-no:hover{background:var(--brand);color:#fff}
+
+/* ORDER ITEMS */
+.order-item{
+  display:flex;align-items:center;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.order-item:last-child{border-bottom:none}
+.order-thumb{
+  width:52px;height:52px;border-radius:10px;
+  background:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0;
+}
+.order-name{font-size:.83rem;font-weight:600;margin-bottom:2px}
+.order-qty{font-size:.75rem;color:var(--muted)}
+.order-sub{font-family:var(--font-head);font-size:.9rem;font-weight:700;color:var(--brand);margin-left:auto;white-space:nowrap}
+
+/* TOTAL */
+.total-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--accent3);border-radius:12px;padding:14px 16px;margin-top:12px;
+}
+.total-lbl{font-size:.85rem;font-weight:600}
+.total-val{font-family:var(--font-head);font-size:1.35rem;font-weight:700;color:var(--brand)}
+
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-item{background:var(--accent3);border-radius:10px;padding:12px 14px}
+.info-item-lbl{font-size:.72rem;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.info-item-val{font-size:.85rem;font-weight:600;color:var(--text)}
+
+/* LANGKAH */
+.steps-list{display:flex;flex-direction:column;gap:10px}
+.step-item{display:flex;align-items:flex-start;gap:12px}
+.step-num{
+  width:28px;height:28px;background:var(--brand);color:#fff;
+  border-radius:50%;font-size:.75rem;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.step-text{font-size:.83rem;color:var(--text);line-height:1.55;padding-top:4px}
+
+/* BUTTONS */
+.btn-wa{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;background:var(--green);color:#fff;border:none;border-radius:14px;
+  padding:15px;font-family:var(--font-body);font-weight:700;font-size:.95rem;
+  cursor:pointer;transition:all .25s;
+  box-shadow:0 5px 18px rgba(37,211,102,.35);
+  text-decoration:none;margin-bottom:10px;
+}
+.btn-wa:hover{opacity:.92;transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,211,102,.45)}
+
+.btn-home{
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;background:transparent;color:var(--muted);
+  border:1.5px solid var(--border);border-radius:14px;
+  padding:13px;font-family:var(--font-body);font-weight:600;font-size:.9rem;
+  cursor:pointer;transition:all .25s;text-decoration:none;
+}
+.btn-home:hover{border-color:var(--brand);color:var(--brand)}
+
+/* TIMER HARAP MENUNGGU */
+.countdown-wrap{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--accent2);border-radius:10px;padding:10px 14px;margin-top:14px;
+  font-size:.78rem;color:var(--muted);
+}
+.countdown-timer{font-family:var(--font-head);font-weight:700;font-size:.9rem;color:var(--brand)}
+
+/* FOOTER */
+footer{text-align:center;padding:18px;font-size:.75rem;color:var(--muted)}
+
+/* PETALS */
+.petal{position:fixed;pointer-events:none;animation:petalFall linear forwards;z-index:0}
+@keyframes petalFall{0%{transform:translateY(-10vh) rotate(0deg);opacity:1}100%{transform:translateY(110vh) rotate(720deg);opacity:0}}
+
+/* SHARE */
+.share-row{display:flex;gap:8px;justify-content:center;margin-top:10px}
+.share-btn{
+  background:var(--accent2);border:1px solid var(--border);color:var(--brand);
+  border-radius:10px;padding:8px 14px;font-size:.78rem;font-weight:600;cursor:pointer;
+  transition:all .2s;font-family:var(--font-body);
+  display:flex;align-items:center;gap:5px;
+}
+.share-btn:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--brand-dark);color:#fff;font-size:.82rem;font-weight:600;padding:11px 22px;border-radius:24px;z-index:999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="navbar-brand">🌸 Azura <em>Buket</em></a>
+</nav>
+
+<div class="main">
+  <div class="sukses-wrap">
+
+    <!-- HEADER SUCCESS -->
+    <div class="check-section">
+      <div class="check-ring">
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="sukses-title" id="judul">Pesanan Berhasil!</div>
+      <p class="sukses-sub" id="subtext">Terima kasih sudah memesan di Azura Buket 🌸<br>Kami akan segera memproses pesananmu dengan penuh cinta!</p>
+    </div>
+
+    <!-- NO PESANAN -->
+    <div class="card">
+      <div class="card-header">🎫 Nomor Pesanan</div>
+      <div class="card-body">
+        <div class="no-pesanan-box">
+          <div class="no-pesanan-lbl">Nomor Pesanan Kamu</div>
+          <div class="no-pesanan-val" id="noPesanan">AZ-LOADING</div>
+          <div class="no-pesanan-copy">
+            <button class="btn-copy-no" onclick="copyNoPesanan()">📋 Salin Nomor</button>
+          </div>
+        </div>
+        <div class="info-grid" id="infoGrid">
+          <div class="info-item"><div class="info-item-lbl">Nama Pemesan</div><div class="info-item-val" id="infNama">—</div></div>
+          <div class="info-item"><div class="info-item-lbl">Metode Bayar</div><div class="info-item-val" id="infMetode">—</div></div>
+          <div class="info-item"><div class="info-item-lbl">Waktu Pesan</div><div class="info-item-val" id="infWaktu">—</div></div>
+          <div class="info-item"><div class="info-item-lbl">Status</div><div class="info-item-val" style="color:#2e7d32">⏳ Menunggu Konfirmasi</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAIL PESANAN -->
+    <div class="card" id="detailCard">
+      <div class="card-header">🧾 Detail Pesanan</div>
+      <div class="card-body">
+        <div id="itemsList"></div>
+        <div class="total-row">
+          <span class="total-lbl">💰 Total Pembayaran</span>
+          <span class="total-val" id="totalBayar">Rp 0</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LANGKAH SELANJUTNYA -->
+    <div class="card">
+      <div class="card-header">📋 Langkah Selanjutnya</div>
+      <div class="card-body">
+        <div class="steps-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-text"><strong>Screenshot halaman ini</strong> sebagai bukti pesanan. Simpan nomor pesanan kamu.</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-text"><strong>Klik tombol WhatsApp</strong> di bawah untuk konfirmasi pesanan dan kirim bukti pembayaran.</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-text" id="step3Text"><strong>Lakukan pembayaran</strong> sesuai metode yang dipilih.</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-text">Tim kami akan <strong>merangkai buketmu</strong> dan mengirimkan sesuai alamat. Estimasi 1–3 jam untuk area Cirebon. 🌸</div>
+          </div>
+        </div>
+
+        <div class="countdown-wrap" id="countdownWrap">
+          <span>Konfirmasi dalam</span>
+          <span class="countdown-timer" id="confirmTimer">23:59:59</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div>
+      <a href="#" id="btnWA" class="btn-wa" target="_blank">
+        📱 Konfirmasi Pesanan via WhatsApp
+      </a>
+      <div class="share-row">
+        <button class="share-btn" onclick="copyNoPesanan()">📋 Salin No. Pesanan</button>
+        <button class="share-btn" onclick="window.print()">🖨️ Print Halaman</button>
+      </div>
+      <a href="index.html" class="btn-home" style="margin-top:10px">
+        🌸 Kembali Belanja
+      </a>
+    </div>
+
+  </div>
+</div>
+
+<footer>&copy; 2025 Azura Buket 🌸 — Semua pesanan dengan penuh cinta 💕</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// Ambil data dari URL & sessionStorage
+const params = new URLSearchParams(window.location.search);
+const noPesanan = params.get('no') || 'AZ-' + Date.now().toString(36).toUpperCase();
+const total = parseInt(params.get('total')) || 0;
+const nama = decodeURIComponent(params.get('nama') || '');
+const metode = decodeURIComponent(params.get('metode') || '');
+
+// Ambil order detail
+let orderData = null;
+try { orderData = JSON.parse(sessionStorage.getItem('azura_order')); } catch(e){}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Isi data
+  document.getElementById('noPesanan').textContent = noPesanan;
+  document.getElementById('infNama').textContent = nama || (orderData?.nama) || '—';
+  document.getElementById('infMetode').textContent = metode || (orderData?.metode) || '—';
+
+  const now = new Date();
+  document.getElementById('infWaktu').textContent = now.toLocaleString('id-ID', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  // Langkah 3 sesuai metode
+  const m = metode || orderData?.metode || '';
+  if (m === 'COD') {
+    document.getElementById('step3Text').innerHTML = '<strong>Siapkan uang tunai</strong> untuk dibayarkan saat kurir tiba di lokasimu.';
+  } else if (m === 'QRIS') {
+    document.getElementById('step3Text').innerHTML = '<strong>Scan QRIS</strong> yang kami kirimkan via WhatsApp untuk menyelesaikan pembayaran.';
+  } else if (m) {
+    document.getElementById('step3Text').innerHTML = `<strong>Lakukan transfer</strong> sesuai info <strong>${m}</strong> yang telah ditampilkan di halaman checkout.`;
+  }
+
+  // Detail items
+  const items = orderData?.items || [];
+  if (items.length) {
+    document.getElementById('itemsList').innerHTML = items.map(i => `
+      <div class="order-item">
+        <div class="order-thumb">${i.emoji||'🌸'}</div>
+        <div style="flex:1">
+          <div class="order-name">${i.nama}</div>
+          <div class="order-qty">× ${i.qty} pcs</div>
+        </div>
+        <div class="order-sub">Rp ${(i.harga*i.qty).toLocaleString('id-ID')}</div>
+      </div>
+    `).join('');
+  } else if (total) {
+    document.getElementById('itemsList').innerHTML = '<p style="font-size:.82rem;color:var(--muted);padding:8px 0">Detail produk tercatat di sistem kami.</p>';
+  }
+
+  const finalTotal = total || orderData?.total || 0;
+  document.getElementById('totalBayar').textContent = 'Rp ' + finalTotal.toLocaleString('id-ID');
+
+  // WA link
+  const n = nama || orderData?.nama || '';
+  const hp = orderData?.hp || '';
+  let waMsg = `Halo Azura Buket 🌸%0A%0ASaya baru saja memesan:%0ANo. Pesanan: *${noPesanan}*%0ANama: ${n}%0AMetode: ${m}%0ATotal: *Rp ${finalTotal.toLocaleString('id-ID')}*`;
+  if (items.length) {
+    waMsg += '%0A%0AProduk:%0A';
+    items.forEach(i => { waMsg += `• ${i.nama} x${i.qty}%0A`; });
+  }
+  waMsg += '%0AMohon konfirmasi pesanan saya. Terima kasih! 💕';
+  document.getElementById('btnWA').href = 'https://wa.me/6281234567890?text=' + waMsg;
+
+  // Clear cart
+  sessionStorage.removeItem('azura_cart');
+
+  // Countdown 24 jam
+  startCountdown();
+
+  // Animasi kelopak
+  spawnPetals();
+});
+
+function startCountdown() {
+  const end = Date.now() + 24*3600*1000;
+  function tick() {
+    const diff = Math.max(0, end - Date.now());
+    if (!diff) { document.getElementById('countdownWrap').style.display = 'none'; return; }
+    const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+    const m = String(Math.floor((diff%3600000)/60000)).padStart(2,'0');
+    const s = String(Math.floor((diff%60000)/1000)).padStart(2,'0');
+    document.getElementById('confirmTimer').textContent = `${h}:${m}:${s}`;
+  }
+  tick(); setInterval(tick, 1000);
+}
+
+function copyNoPesanan() {
+  navigator.clipboard.writeText(noPesanan).then(() => showToast('✅ Nomor pesanan disalin!'));
+}
+
+function spawnPetals() {
+  const emojis = ['🌸','🌷','🌹','✿','💮'];
+  let count = 0;
+  function spawn() {
+    if (count > 18) return;
+    count++;
+    const el = document.createElement('div');
+    el.className = 'petal';
+    el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.cssText = `left:${Math.random()*100}vw;font-size:${10+Math.random()*14}px;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*2}s`;
+    document.body.appendChild(el);
+    setTimeout(() => { el.remove(); count--; }, 8000);
+  }
+  for (let i = 0; i < 16; i++) setTimeout(spawn, i * 250);
+}
+
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

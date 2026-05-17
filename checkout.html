@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout — Azura Buket</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#c0395e;--brand-dark:#8e1f3d;--brand-light:#e8729a;
+  --accent:#f5c0cc;--accent2:#fde8ec;--accent3:#fff0f4;
+  --bg:#fdf8f5;--card:#fff;--text:#2d1520;--muted:#9b6b7e;--border:#f0d0da;
+  --shadow:0 2px 16px rgba(192,57,94,.10);--shadow-lg:0 8px 40px rgba(192,57,94,.18);
+  --r:14px;--r-sm:8px;--r-xl:20px;
+  --font-head:'Playfair Display',serif;--font-body:'Nunito',sans-serif;
+  --green:#25d366;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+/* NAVBAR */
+.navbar{
+  background:var(--brand);padding:0 20px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.2);
+}
+.navbar-brand{
+  font-family:var(--font-head);font-weight:700;font-size:1.2rem;color:#fff;
+  display:flex;align-items:center;gap:8px;
+}
+.navbar-brand em{color:var(--accent2);font-style:italic}
+.nav-back{color:rgba(255,255,255,.85);font-size:.85rem;font-weight:500;display:flex;align-items:center;gap:6px;transition:color .2s}
+.nav-back:hover{color:#fff}
+
+/* PROGRESS STEPS */
+.steps-wrap{background:#fff;padding:16px 20px;border-bottom:1px solid var(--border)}
+.steps{
+  display:flex;align-items:center;max-width:500px;margin:0 auto;
+}
+.step{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.step-circle{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.85rem;transition:all .3s;
+}
+.step-circle.done{background:var(--brand);color:#fff;box-shadow:0 0 0 3px var(--accent)}
+.step-circle.inactive{background:var(--accent2);color:var(--muted)}
+.step-label{font-size:.7rem;font-weight:600;color:var(--muted)}
+.step-label.active{color:var(--brand)}
+.step-line{flex:1;height:2px;margin-bottom:18px;transition:background .3s}
+.step-line.done{background:var(--brand)}
+.step-line.inactive{background:var(--border)}
+
+/* LAYOUT */
+.page-wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+.checkout-grid{display:grid;grid-template-columns:1fr;gap:20px}
+@media(min-width:768px){.checkout-grid{grid-template-columns:1fr 360px}}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--r-xl);border:1px solid var(--border);overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.card:last-child{margin-bottom:0}
+.card-header{
+  background:linear-gradient(135deg,var(--brand),var(--brand-light));
+  color:#fff;padding:14px 20px;
+  display:flex;align-items:center;gap:10px;
+  font-family:var(--font-head);font-weight:700;font-size:.95rem;
+}
+.card-header-icon{font-size:1.2rem}
+.card-body{padding:20px}
+
+/* CART ITEMS */
+.cart-empty{text-align:center;padding:32px;color:var(--muted)}
+.cart-empty span{font-size:2.5rem;display:block;margin-bottom:8px}
+.cart-item{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.cart-item:last-child{border-bottom:none}
+.cart-thumb{
+  width:66px;height:66px;border-radius:12px;
+  background:var(--accent2);overflow:hidden;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:2.2rem;
+}
+.cart-name{font-size:.85rem;font-weight:600;line-height:1.3;margin-bottom:3px}
+.cart-price{font-size:.8rem;color:var(--brand);font-weight:700;margin-bottom:5px}
+.qty-row{display:flex;align-items:center;gap:8px}
+.qty-btn{
+  width:28px;height:28px;border:1.5px solid var(--border);
+  background:var(--bg);border-radius:8px;cursor:pointer;
+  font-size:15px;font-weight:700;color:var(--brand);
+  display:flex;align-items:center;justify-content:center;transition:all .2s;
+}
+.qty-btn:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+.qty-num{font-weight:700;min-width:22px;text-align:center;font-size:.88rem}
+.del-btn{margin-left:auto;background:none;border:none;cursor:pointer;font-size:17px;color:var(--muted);transition:color .2s;padding:4px}
+.del-btn:hover{color:#e53935}
+.item-subtotal{font-size:.78rem;color:var(--muted);margin-top:2px}
+
+/* SELECT PRODUK */
+.prod-select-wrap{margin-bottom:14px}
+select.form-control{
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23c0395e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:36px;
+}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:480px){.form-row{grid-template-columns:1fr}}
+.form-group{margin-bottom:14px}
+.form-group:last-child{margin-bottom:0}
+label{display:block;font-size:.8rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+label .req{color:var(--brand)}
+.form-control{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--border);border-radius:10px;
+  font-family:var(--font-body);font-size:.9rem;color:var(--text);
+  background:var(--bg);transition:all .2s;
+}
+.form-control:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(192,57,94,.08)}
+.form-control::placeholder{color:#d4a8b5}
+textarea.form-control{resize:vertical;min-height:90px}
+
+/* METODE BAYAR */
+.metode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:480px){.metode-grid{grid-template-columns:repeat(3,1fr)}}
+.metode-opt{position:relative}
+.metode-opt input{position:absolute;opacity:0;width:0;height:0}
+.metode-label{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:12px 10px;border-radius:12px;border:1.5px solid var(--border);
+  cursor:pointer;font-size:.78rem;font-weight:600;transition:all .2s;background:var(--bg);
+  text-align:center;
+}
+.metode-label:hover{border-color:var(--brand-light)}
+.metode-opt input:checked + .metode-label{
+  border-color:var(--brand);background:var(--accent2);color:var(--brand);
+  box-shadow:0 0 0 3px rgba(192,57,94,.1);
+}
+.metode-icon{font-size:1.6rem}
+
+/* INFO BAYAR */
+.info-bayar{
+  background:var(--accent2);border:1px solid var(--accent);border-radius:12px;
+  padding:14px 16px;display:none;
+}
+.info-bayar.show{display:block}
+.info-bayar h5{font-family:var(--font-head);font-size:1rem;font-weight:700;color:var(--brand);margin-bottom:10px}
+.info-bayar p{font-size:.82rem;color:var(--text);margin-bottom:5px;line-height:1.5}
+.rek-box{
+  display:flex;align-items:center;justify-content:space-between;
+  background:#fff;border-radius:10px;padding:12px 14px;margin:10px 0;
+  border:1px solid var(--border);
+}
+.rek-bank{font-size:.72rem;color:var(--muted);margin-bottom:2px}
+.rek-num{font-family:var(--font-head);font-size:1.2rem;font-weight:700;color:var(--brand)}
+.copy-btn{
+  background:var(--brand);color:#fff;border:none;border-radius:8px;
+  padding:6px 14px;font-size:.75rem;font-weight:700;cursor:pointer;transition:opacity .2s;
+  font-family:var(--font-body);
+}
+.copy-btn:hover{opacity:.88}
+
+/* RINGKASAN */
+.summary-item{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:9px 0;border-bottom:1px solid var(--border);
+  font-size:.85rem;
+}
+.summary-item:last-child{border-bottom:none}
+.summary-item .item-name{flex:1;padding-right:10px;color:var(--text);font-weight:500}
+.summary-item .item-amt{font-weight:600;color:var(--text);white-space:nowrap}
+.summary-divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:10px 0}
+.summary-total{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 0;
+}
+.summary-total .lbl{font-family:var(--font-head);font-weight:700;font-size:1rem}
+.summary-total .amt{font-family:var(--font-head);font-weight:900;font-size:1.3rem;color:var(--brand)}
+
+.ongkir-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:#e8f5e9;color:#2e7d32;font-size:.72rem;font-weight:700;
+  padding:2px 8px;border-radius:10px;
+}
+
+/* TOMBOL CHECKOUT */
+.btn-checkout{
+  width:100%;padding:15px;
+  background:linear-gradient(135deg,var(--brand),var(--brand-light));
+  color:#fff;border:none;border-radius:14px;
+  font-family:var(--font-body);font-weight:700;font-size:1rem;
+  cursor:pointer;transition:all .25s;margin-top:14px;
+  box-shadow:0 6px 20px rgba(192,57,94,.35);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  letter-spacing:.02em;
+}
+.btn-checkout:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 28px rgba(192,57,94,.45)}
+.btn-checkout:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-checkout.loading{pointer-events:none}
+
+.btn-wa-order{
+  width:100%;padding:13px;
+  background:var(--green);color:#fff;border:none;border-radius:14px;
+  font-family:var(--font-body);font-weight:700;font-size:.9rem;
+  cursor:pointer;transition:all .25s;margin-top:10px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  box-shadow:0 4px 16px rgba(37,211,102,.3);
+}
+.btn-wa-order:hover{opacity:.92;transform:translateY(-1px)}
+
+.secure-info{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  font-size:.73rem;color:var(--muted);margin-top:10px;text-align:center;
+}
+
+/* ALERT */
+.alert{border-radius:10px;padding:12px 16px;font-size:.86rem;margin-bottom:14px;display:flex;align-items:flex-start;gap:8px}
+.alert-danger{background:rgba(229,57,53,.08);color:#c62828;border:1px solid rgba(229,57,53,.2)}
+.alert-success{background:rgba(46,125,50,.08);color:#2e7d32;border:1px solid rgba(46,125,50,.2)}
+
+/* STICKY SUMMARY */
+.sticky-sum{position:sticky;top:72px}
+
+/* PROMO INPUT */
+.promo-row{display:flex;gap:8px;margin-bottom:14px}
+.promo-row .form-control{flex:1}
+.btn-apply{
+  background:var(--brand);color:#fff;border:none;border-radius:10px;
+  padding:0 18px;font-family:var(--font-body);font-weight:700;font-size:.85rem;cursor:pointer;
+  white-space:nowrap;
+}
+
+/* DELIVERY INFO */
+.delivery-options{display:flex;flex-direction:column;gap:10px}
+.delivery-opt{position:relative}
+.delivery-opt input{position:absolute;opacity:0;width:0;height:0}
+.delivery-label{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;cursor:pointer;
+  transition:all .2s;background:var(--bg);
+}
+.delivery-label:hover{border-color:var(--brand-light)}
+.delivery-opt input:checked + .delivery-label{border-color:var(--brand);background:var(--accent2)}
+.dlv-left{display:flex;align-items:center;gap:10px}
+.dlv-icon{font-size:1.4rem}
+.dlv-name{font-size:.88rem;font-weight:600}
+.dlv-desc{font-size:.72rem;color:var(--muted)}
+.dlv-price{font-size:.88rem;font-weight:700;color:var(--brand)}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:20px;left:50%;
+  transform:translateX(-50%) translateY(10px);
+  background:var(--brand-dark);color:#fff;
+  font-size:.82rem;font-weight:600;padding:11px 22px;
+  border-radius:24px;z-index:999;opacity:0;
+  transition:all .3s;pointer-events:none;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="navbar-brand">
+    <span>🌸</span> Azura <em>Buket</em>
+  </a>
+  <a href="index.html" class="nav-back">← Lanjut Belanja</a>
+</nav>
+
+<!-- STEPS -->
+<div class="steps-wrap">
+  <div class="steps" id="stepsEl">
+    <div class="step">
+      <div class="step-circle done" id="sc1">1</div>
+      <span class="step-label active" id="sl1">Keranjang</span>
+    </div>
+    <div class="step-line done" id="sline1"></div>
+    <div class="step">
+      <div class="step-circle done" id="sc2">2</div>
+      <span class="step-label active" id="sl2">Data & Pengiriman</span>
+    </div>
+    <div class="step-line inactive" id="sline2"></div>
+    <div class="step">
+      <div class="step-circle inactive" id="sc3">3</div>
+      <span class="step-label" id="sl3">Konfirmasi</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="checkout-grid">
+
+    <!-- KIRI -->
+    <div>
+      <!-- PILIH PRODUK -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-icon">🌸</span> Pilih Produk</div>
+        <div class="card-body">
+          <div class="prod-select-wrap">
+            <label>Cari & Pilih Produk</label>
+            <select class="form-control" id="selectProduk" onchange="addFromSelect()">
+              <option value="">-- Pilih produk --</option>
+            </select>
+          </div>
+          <div id="keranjangList">
+            <div class="cart-empty" id="cartEmptyMsg">
+              <span>🌸</span>
+              <p style="font-size:.88rem">Keranjang masih kosong.<br>Pilih produk di atas untuk mulai.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA PEMESAN -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-icon">📋</span> Data Pemesan</div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nama Lengkap <span class="req">*</span></label>
+              <input type="text" id="nama" class="form-control" placeholder="Nama lengkap kamu">
+            </div>
+            <div class="form-group">
+              <label>No. WhatsApp <span class="req">*</span></label>
+              <input type="tel" id="no_hp" class="form-control" placeholder="08xxxxxxxxxx">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Alamat Lengkap <span class="req">*</span></label>
+            <textarea id="alamat" class="form-control" placeholder="Jalan, no rumah, RT/RW, Kelurahan, Kecamatan, Kota..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Catatan / Pesan Kartu (opsional)</label>
+            <textarea id="catatan" class="form-control" rows="3" placeholder="Contoh: Tolong sertakan kartu ucapan 'Happy Birthday, Sayang! 💕' ..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- PENGIRIMAN -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-icon">🚚</span> Metode Pengiriman</div>
+        <div class="card-body">
+          <div class="delivery-options">
+            <div class="delivery-opt">
+              <input type="radio" name="delivery" id="d_cod" value="cod" checked onchange="updateDelivery()">
+              <label for="d_cod" class="delivery-label">
+                <div class="dlv-left">
+                  <span class="dlv-icon">🏍️</span>
+                  <div>
+                    <div class="dlv-name">Antar Langsung (COD)</div>
+                    <div class="dlv-desc">Area Kota Cirebon & sekitarnya • Estimasi 1-3 jam</div>
+                  </div>
+                </div>
+                <div class="dlv-price" style="color:#2e7d32">GRATIS</div>
+              </label>
+            </div>
+            <div class="delivery-opt">
+              <input type="radio" name="delivery" id="d_jnt" value="jnt" onchange="updateDelivery()">
+              <label for="d_jnt" class="delivery-label">
+                <div class="dlv-left">
+                  <span class="dlv-icon">📦</span>
+                  <div>
+                    <div class="dlv-name">J&T Express</div>
+                    <div class="dlv-desc">Pengiriman ke seluruh Indonesia • 1-3 hari</div>
+                  </div>
+                </div>
+                <div class="dlv-price">Rp 15.000</div>
+              </label>
+            </div>
+            <div class="delivery-opt">
+              <input type="radio" name="delivery" id="d_jne" value="jne" onchange="updateDelivery()">
+              <label for="d_jne" class="delivery-label">
+                <div class="dlv-left">
+                  <span class="dlv-icon">📬</span>
+                  <div>
+                    <div class="dlv-name">JNE REG</div>
+                    <div class="dlv-desc">Pengiriman ke seluruh Indonesia • 2-4 hari</div>
+                  </div>
+                </div>
+                <div class="dlv-price">Rp 12.000</div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- METODE BAYAR -->
+      <div class="card">
+        <div class="card-header"><span class="card-header-icon">💳</span> Metode Pembayaran</div>
+        <div class="card-body">
+          <div class="metode-grid">
+            <div class="metode-opt">
+              <input type="radio" name="metode" id="m_tf" value="Transfer Bank" checked onchange="updateMetode()">
+              <label for="m_tf" class="metode-label"><span class="metode-icon">🏦</span>Transfer Bank</label>
+            </div>
+            <div class="metode-opt">
+              <input type="radio" name="metode" id="m_bca" value="BCA" onchange="updateMetode()">
+              <label for="m_bca" class="metode-label"><span class="metode-icon">🏧</span>BCA</label>
+            </div>
+            <div class="metode-opt">
+              <input type="radio" name="metode" id="m_bri" value="BRI" onchange="updateMetode()">
+              <label for="m_bri" class="metode-label"><span class="metode-icon">💙</span>BRI</label>
+            </div>
+            <div class="metode-opt">
+              <input type="radio" name="metode" id="m_qris" value="QRIS" onchange="updateMetode()">
+              <label for="m_qris" class="metode-label"><span class="metode-icon">📱</span>QRIS</label>
+            </div>
+            <div class="metode-opt">
+              <input type="radio" name="metode" id="m_gopay" value="GoPay" onchange="updateMetode()">
+              <label for="m_gopay" class="metode-label"><span class="metode-icon">💚</span>GoPay/OVO</label>
+            </div>
+            <div class="metode-opt">
+              <input type="radio" name="metode" id="m_cod2" value="COD" onchange="updateMetode()">
+              <label for="m_cod2" class="metode-label"><span class="metode-icon">🤝</span>Bayar COD</label>
+            </div>
+          </div>
+
+          <div class="info-bayar show" id="infoBayar">
+            <h5 id="infoBayarTitle">🏦 Info Transfer Bank</h5>
+            <div id="infoBayarContent"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KANAN: RINGKASAN -->
+    <div class="sticky-sum">
+      <div class="card">
+        <div class="card-header"><span class="card-header-icon">🧾</span> Ringkasan Pesanan</div>
+        <div class="card-body">
+          <div id="alertMsg"></div>
+
+          <div id="summaryItems">
+            <p style="text-align:center;color:var(--muted);font-size:.85rem;padding:16px 0">
+              Pilih produk untuk melihat ringkasan
+            </p>
+          </div>
+
+          <div id="summaryBottom" style="display:none">
+            <div class="summary-divider"></div>
+            <div class="summary-item">
+              <span class="item-name">Subtotal Produk</span>
+              <span class="item-amt" id="s_subtotal">Rp 0</span>
+            </div>
+            <div class="summary-item">
+              <span class="item-name">Ongkos Kirim</span>
+              <span class="item-amt" id="s_ongkir"><span class="ongkir-badge">🎉 GRATIS</span></span>
+            </div>
+            <div class="summary-divider"></div>
+            <div class="summary-total">
+              <span class="lbl">Total Bayar</span>
+              <span class="amt" id="s_total">Rp 0</span>
+            </div>
+          </div>
+
+          <button class="btn-checkout" id="btnCheckout" onclick="submitOrder()" disabled>
+            ✨ Buat Pesanan
+          </button>
+          <button class="btn-wa-order" onclick="orderViaWA()">
+            📱 Pesan via WhatsApp
+          </button>
+          <div class="secure-info">🔒 Transaksi aman & terjamin</div>
+        </div>
+      </div>
+
+      <!-- JAMINAN -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shadow)">
+        <div style="font-family:var(--font-head);font-weight:700;font-size:.88rem;margin-bottom:12px;color:var(--brand)">🛡️ Jaminan Azura Buket</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text)"><span>✅</span> Bunga segar dijamin</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text)"><span>✅</span> Packaging rapi & aman</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text)"><span>✅</span> Gratis revisi desain</div>
+          <div style="display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--text)"><span>✅</span> Respon cepat via WhatsApp</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const PRODUK = [
+  {id:1,nama:'Buket Mawar Merah Premium',harga:95000,stok:12,kategori:'Mawar',emoji:'🌹'},
+  {id:2,nama:'Buket Wisuda Mewah Ungu',harga:145000,stok:8,kategori:'Wisuda',emoji:'🎓'},
+  {id:3,nama:'Money Buket Uang 50rb',harga:175000,stok:15,kategori:'Money Buket',emoji:'💵'},
+  {id:4,nama:'Snack Buket Mini Mix',harga:85000,stok:20,kategori:'Snack Buket',emoji:'🍫'},
+  {id:5,nama:'Buket Sunflower Cerah',harga:110000,stok:6,kategori:'Sunflower',emoji:'🌻'},
+  {id:6,nama:'Buket Anniversary Pink',harga:135000,stok:10,kategori:'Anniversary',emoji:'💑'},
+  {id:7,nama:'Baby Shower Buket Cute',harga:125000,stok:5,kategori:'Baby Shower',emoji:'🍼'},
+  {id:8,nama:'Buket Tulip Korea Style',harga:155000,stok:9,kategori:'Tulip',emoji:'🌷'},
+  {id:9,nama:'Valentine Rose Bouquet',harga:185000,stok:3,kategori:'Valentine',emoji:'💝'},
+  {id:10,nama:'Custom Buket Eksklusif',harga:200000,stok:999,kategori:'Custom',emoji:'✨'},
+  {id:11,nama:'Buket Mawar Pink Pastel',harga:88000,stok:14,kategori:'Mawar',emoji:'🌸'},
+  {id:12,nama:'Wisuda Buket Elegan Gold',harga:165000,stok:7,kategori:'Wisuda',emoji:'🎓'},
+];
+
+const INFO_METODE = {
+  'Transfer Bank':{title:'🏦 Transfer Bank',html:`<p>Transfer ke salah satu rekening:</p><div class="rek-box"><div><div class="rek-bank">BCA — a.n. Azura Rahmawati</div><div class="rek-num">1234567890</div></div><button class="copy-btn" onclick="copyText('1234567890')">Salin</button></div><p style="font-size:.78rem;color:var(--muted);margin-top:6px">Kirim bukti transfer ke WhatsApp setelah pembayaran. ✅</p>`},
+  'BCA':{title:'🏧 Transfer BCA',html:`<div class="rek-box"><div><div class="rek-bank">BCA — a.n. Azura Rahmawati</div><div class="rek-num">1234567890</div></div><button class="copy-btn" onclick="copyText('1234567890')">Salin</button></div>`},
+  'BRI':{title:'💙 Transfer BRI',html:`<div class="rek-box"><div><div class="rek-bank">BRI — a.n. Azura Rahmawati</div><div class="rek-num">0987654321</div></div><button class="copy-btn" onclick="copyText('0987654321')">Salin</button></div>`},
+  'QRIS':{title:'📱 QRIS',html:`<p style="font-size:.82rem">Scan QRIS yang akan kami kirimkan via WhatsApp setelah pesanan dikonfirmasi. Mudah & cepat!</p>`},
+  'GoPay':{title:'💚 GoPay / OVO',html:`<div class="rek-box"><div><div class="rek-bank">No. GoPay/OVO</div><div class="rek-num">0812-3456-7890</div></div><button class="copy-btn" onclick="copyText('081234567890')">Salin</button></div>`},
+  'COD':{title:'🤝 COD (Bayar di Tempat)',html:`<p style="font-size:.82rem">Bayar saat barang tiba. Hanya tersedia untuk area <strong>Kota Cirebon</strong> dan sekitarnya (radius 15 km).</p>`},
+};
+
+const ONGKIR = {cod:0, jnt:15000, jne:12000};
+let cart = {};
+let ongkirVal = 0;
+
+// Init select
+window.addEventListener('DOMContentLoaded', () => {
+  const sel = document.getElementById('selectProduk');
+  PRODUK.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = `${p.emoji} ${p.nama} — Rp ${p.harga.toLocaleString('id-ID')} (Stok: ${p.stok})`;
+    sel.appendChild(opt);
+  });
+
+  // Load cart from sessionStorage if any
+  const saved = sessionStorage.getItem('azura_cart');
+  if (saved) try { cart = JSON.parse(saved); } catch(e){}
+
+  // Check URL param
+  const params = new URLSearchParams(window.location.search);
+  const pid = parseInt(params.get('produk'));
+  if (pid) { addProdukById(pid); }
+
+  updateMetode();
+  updateDelivery();
+  renderCart();
+  renderSummary();
+});
+
+function addFromSelect() {
+  const sel = document.getElementById('selectProduk');
+  const id = parseInt(sel.value);
+  if (!id) return;
+  addProdukById(id);
+  sel.value = '';
+}
+
+function addProdukById(id) {
+  const p = PRODUK.find(x => x.id === id);
+  if (!p) return;
+  if (cart[id]) {
+    if (cart[id].qty >= p.stok) { showToast('⚠️ Stok tidak mencukupi!'); return; }
+    cart[id].qty++;
+  } else {
+    cart[id] = {id, nama:p.nama, harga:p.harga, qty:1, emoji:p.emoji, stok:p.stok};
+  }
+  saveCart();
+  renderCart();
+  renderSummary();
+}
+
+function renderCart() {
+  const list = document.getElementById('keranjangList');
+  const emptyMsg = document.getElementById('cartEmptyMsg');
+  const keys = Object.keys(cart);
+  if (!keys.length) {
+    list.innerHTML = '';
+    list.appendChild(emptyMsg);
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+  list.innerHTML = keys.map(id => {
+    const item = cart[id];
+    return `<div class="cart-item">
+      <div class="cart-thumb">${item.emoji}</div>
+      <div style="flex:1">
+        <div class="cart-name">${item.nama}</div>
+        <div class="cart-price">Rp ${item.harga.toLocaleString('id-ID')} / pcs</div>
+        <div class="item-subtotal">Subtotal: <strong style="color:var(--brand)">Rp ${(item.harga*item.qty).toLocaleString('id-ID')}</strong></div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="ubahQty(${id},-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="ubahQty(${id},1)">+</button>
+        </div>
+      </div>
+      <button class="del-btn" onclick="hapusItem(${id})" title="Hapus">🗑</button>
+    </div>`;
+  }).join('');
+}
+
+function ubahQty(id, d) {
+  if (!cart[id]) return;
+  const nq = cart[id].qty + d;
+  if (nq <= 0) { hapusItem(id); return; }
+  if (nq > cart[id].stok) { showToast('⚠️ Stok tidak mencukupi!'); return; }
+  cart[id].qty = nq;
+  saveCart();
+  renderCart();
+  renderSummary();
+}
+
+function hapusItem(id) {
+  delete cart[id];
+  saveCart();
+  renderCart();
+  renderSummary();
+}
+
+function renderSummary() {
+  const keys = Object.keys(cart);
+  const subtotal = keys.reduce((s,id) => s + cart[id].harga * cart[id].qty, 0);
+  const total = subtotal + ongkirVal;
+  const sb = document.getElementById('summaryBottom');
+  const si = document.getElementById('summaryItems');
+  const btn = document.getElementById('btnCheckout');
+
+  if (!keys.length) {
+    si.innerHTML = '<p style="text-align:center;color:var(--muted);font-size:.85rem;padding:16px 0">Pilih produk untuk melihat ringkasan</p>';
+    sb.style.display = 'none'; btn.disabled = true; return;
+  }
+
+  si.innerHTML = keys.map(id => {
+    const item = cart[id];
+    return `<div class="summary-item">
+      <span class="item-name">${item.emoji} ${item.nama} ×${item.qty}</span>
+      <span class="item-amt">Rp ${(item.harga*item.qty).toLocaleString('id-ID')}</span>
+    </div>`;
+  }).join('');
+
+  sb.style.display = 'block';
+  document.getElementById('s_subtotal').textContent = 'Rp ' + subtotal.toLocaleString('id-ID');
+  document.getElementById('s_ongkir').innerHTML = ongkirVal === 0
+    ? '<span class="ongkir-badge">🎉 GRATIS</span>'
+    : 'Rp ' + ongkirVal.toLocaleString('id-ID');
+  document.getElementById('s_total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+  btn.disabled = false;
+}
+
+function updateDelivery() {
+  const val = document.querySelector('input[name="delivery"]:checked')?.value || 'cod';
+  ongkirVal = ONGKIR[val] || 0;
+  renderSummary();
+}
+
+function updateMetode() {
+  const val = document.querySelector('input[name="metode"]:checked')?.value;
+  const el = document.getElementById('infoBayar');
+  if (val && INFO_METODE[val]) {
+    document.getElementById('infoBayarTitle').textContent = INFO_METODE[val].title;
+    document.getElementById('infoBayarContent').innerHTML = INFO_METODE[val].html;
+    el.classList.add('show');
+  } else el.classList.remove('show');
+}
+
+function submitOrder() {
+  const nama = document.getElementById('nama').value.trim();
+  const hp = document.getElementById('no_hp').value.trim();
+  const alamat = document.getElementById('alamat').value.trim();
+  const catatan = document.getElementById('catatan').value.trim();
+  const metode = document.querySelector('input[name="metode"]:checked')?.value || '';
+  const delivery = document.querySelector('input[name="delivery"]:checked')?.value || '';
+  const keys = Object.keys(cart);
+
+  if (!nama) { showAlert('❌ Nama lengkap wajib diisi!','danger'); return; }
+  if (!hp || hp.length < 10) { showAlert('❌ No. WhatsApp tidak valid!','danger'); return; }
+  if (!alamat) { showAlert('❌ Alamat pengiriman wajib diisi!','danger'); return; }
+  if (!keys.length) { showAlert('❌ Keranjang masih kosong!','danger'); return; }
+
+  const btn = document.getElementById('btnCheckout');
+  btn.disabled = true;
+  btn.innerHTML = '<span style="animation:spin .8s linear infinite;display:inline-block">⏳</span> Memproses...';
+
+  const subtotal = keys.reduce((s,id) => s + cart[id].harga * cart[id].qty, 0);
+  const total = subtotal + ongkirVal;
+  const noPesanan = 'AZ-' + Date.now().toString(36).toUpperCase();
+
+  // Simpan ke sessionStorage untuk halaman sukses
+  sessionStorage.setItem('azura_order', JSON.stringify({noPesanan, nama, hp, alamat, catatan, metode, delivery, total, items: Object.values(cart)}));
+
+  setTimeout(() => {
+    window.location.href = `pesanan_sukses.html?no=${noPesanan}&total=${total}&nama=${encodeURIComponent(nama)}&metode=${encodeURIComponent(metode)}`;
+  }, 1200);
+}
+
+function orderViaWA() {
+  const nama = document.getElementById('nama').value.trim() || '(Belum diisi)';
+  const alamat = document.getElementById('alamat').value.trim() || '(Belum diisi)';
+  const keys = Object.keys(cart);
+  if (!keys.length) { showToast('⚠️ Pilih produk dulu!'); return; }
+  const subtotal = keys.reduce((s,id) => s + cart[id].harga * cart[id].qty, 0);
+  const total = subtotal + ongkirVal;
+  let msg = `Halo Azura Buket 🌸%0A%0ASaya ingin pesan:%0A`;
+  Object.values(cart).forEach(i => { msg += `• ${i.nama} x${i.qty} = Rp ${(i.harga*i.qty).toLocaleString('id-ID')}%0A`; });
+  msg += `%0ATotal: *Rp ${total.toLocaleString('id-ID')}*%0ANama: ${nama}%0AAlamat: ${alamat}%0A%0ATerima kasih! 💕`;
+  window.open('https://wa.me/6281234567890?text=' + msg, '_blank');
+}
+
+function copyText(t) {
+  navigator.clipboard.writeText(t).then(() => showToast('✅ Disalin: ' + t));
+}
+
+function saveCart() {
+  sessionStorage.setItem('azura_cart', JSON.stringify(cart));
+}
+
+let alertTimer;
+function showAlert(msg, type) {
+  clearTimeout(alertTimer);
+  const el = document.getElementById('alertMsg');
+  el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  alertTimer = setTimeout(() => { el.innerHTML = ''; }, 4000);
+}
+
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Azura Buket</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#c0395e;--brand-dark:#8e1f3d;--brand-light:#e8729a;
+  --accent:#f5c0cc;--accent2:#fde8ec;--accent3:#fff0f4;
+  --bg:#f8f4f6;--card:#fff;--text:#2d1520;--muted:#9b6b7e;--border:#f0d0da;
+  --sidebar-w:240px;
+  --shadow:0 2px 16px rgba(192,57,94,.08);--shadow-lg:0 8px 32px rgba(192,57,94,.16);
+  --r:12px;--r-sm:8px;
+  --font-head:'Playfair Display',serif;--font-body:'Nunito',sans-serif;
+  --green:#2e7d32;--green-bg:#e8f5e9;
+  --orange:#e65100;--orange-bg:#fff3e0;
+  --blue:#1565c0;--blue-bg:#e3f2fd;
+  --red:#c62828;--red-bg:#ffebee;
+}
+html,body{height:100%}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{
+  width:var(--sidebar-w);background:var(--brand-dark);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:100;
+  transition:transform .3s;
+}
+.sidebar-logo{
+  padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1);
+}
+.sidebar-logo-brand{
+  font-family:var(--font-head);font-weight:700;font-size:1.2rem;color:#fff;
+  display:flex;align-items:center;gap:8px;
+}
+.sidebar-logo-brand em{color:var(--accent2);font-style:italic}
+.sidebar-logo-sub{font-size:.72rem;color:rgba(255,255,255,.5);margin-top:3px}
+
+.sidebar-nav{flex:1;padding:16px 0;overflow-y:auto}
+.nav-section{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.35);padding:8px 18px 5px;margin-top:10px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 18px;cursor:pointer;
+  color:rgba(255,255,255,.7);font-size:.85rem;font-weight:500;
+  transition:all .2s;border-left:3px solid transparent;margin:1px 0;
+}
+.nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+.nav-item.active{background:rgba(255,255,255,.12);color:#fff;border-left-color:var(--accent2)}
+.nav-item .nav-icon{font-size:1.1rem;width:24px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--brand-light);color:#fff;font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px}
+
+.sidebar-footer{
+  padding:14px 16px;border-top:1px solid rgba(255,255,255,.1);
+  display:flex;align-items:center;gap:10px;
+}
+.admin-avatar{
+  width:36px;height:36px;background:var(--accent);color:var(--brand);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;
+}
+.admin-name{font-size:.82rem;font-weight:600;color:#fff;line-height:1.3}
+.admin-role{font-size:.7rem;color:rgba(255,255,255,.5)}
+.logout-btn{margin-left:auto;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.7);padding:5px 8px;border-radius:7px;font-size:.75rem;cursor:pointer;transition:all .2s;font-family:var(--font-body)}
+.logout-btn:hover{background:rgba(255,255,255,.2);color:#fff}
+
+/* MAIN CONTENT */
+.content{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* TOPBAR */
+.topbar{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:0 24px;height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:50;box-shadow:var(--shadow);
+}
+.topbar-left{display:flex;align-items:center;gap:14px}
+.topbar-title{font-family:var(--font-head);font-weight:700;font-size:1.1rem}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-btn{
+  background:var(--accent2);border:1px solid var(--border);color:var(--brand);
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;
+  transition:all .2s;position:relative;
+}
+.topbar-btn:hover{background:var(--accent)}
+.tb-badge{position:absolute;top:-3px;right:-3px;background:var(--brand);color:#fff;font-size:9px;font-weight:700;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.topbar-date{font-size:.8rem;color:var(--muted)}
+
+/* PAGE */
+.page{display:none;padding:24px;flex:1}
+.page.active{display:block}
+
+/* STATS GRID */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:24px}
+@media(min-width:900px){.stats-grid{grid-template-columns:repeat(4,1fr)}}
+
+.stat-card{
+  background:var(--card);border-radius:var(--r);padding:18px;
+  box-shadow:var(--shadow);border:1px solid var(--border);position:relative;overflow:hidden;
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0;
+}
+.stat-card.green::before{background:linear-gradient(90deg,#2e7d32,#4caf50)}
+.stat-card.blue::before{background:linear-gradient(90deg,#1565c0,#42a5f5)}
+.stat-card.orange::before{background:linear-gradient(90deg,#e65100,#ff9800)}
+.stat-card.pink::before{background:linear-gradient(90deg,var(--brand-dark),var(--brand-light))}
+
+.stat-icon-wrap{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin-bottom:12px}
+.stat-card.green .stat-icon-wrap{background:var(--green-bg)}
+.stat-card.blue .stat-icon-wrap{background:var(--blue-bg)}
+.stat-card.orange .stat-icon-wrap{background:var(--orange-bg)}
+.stat-card.pink .stat-icon-wrap{background:var(--accent2)}
+
+.stat-lbl{font-size:.73rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.stat-val{font-family:var(--font-head);font-size:1.5rem;font-weight:700;margin-bottom:3px}
+.stat-change{font-size:.72rem;font-weight:600;display:flex;align-items:center;gap:3px}
+.stat-change.up{color:var(--green)}.stat-change.down{color:var(--red)}
+
+/* SECTION HEADER */
+.section-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.section-title{font-family:var(--font-head);font-weight:700;font-size:1rem;display:flex;align-items:center;gap:8px}
+.section-title::before{content:'';width:4px;height:18px;background:var(--brand);border-radius:2px;display:block}
+
+/* TABLE */
+.tbl-wrap{background:var(--card);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.tbl-toolbar{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.tbl-search{
+  display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--border);
+  border-radius:10px;overflow:hidden;height:36px;
+}
+.tbl-search input{border:none;outline:none;padding:0 12px;background:transparent;font-family:var(--font-body);font-size:.85rem;width:200px}
+.tbl-search span{padding:0 10px;color:var(--muted);font-size:16px}
+.tbl-actions{display:flex;gap:8px}
+
+table{width:100%;border-collapse:collapse}
+thead th{
+  background:var(--accent3);padding:11px 16px;
+  font-size:.73rem;font-weight:700;color:var(--muted);
+  text-align:left;text-transform:uppercase;letter-spacing:.05em;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody tr{border-bottom:1px solid rgba(240,208,218,.4);transition:background .15s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--accent3)}
+tbody td{padding:12px 16px;font-size:.84rem;vertical-align:middle}
+
+/* STATUS BADGES */
+.sbadge{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;font-weight:700;padding:4px 10px;border-radius:20px}
+.sbadge.menunggu{background:#fff3e0;color:#e65100}
+.sbadge.diproses{background:#e3f2fd;color:#1565c0}
+.sbadge.dikirim{background:#e8f5e9;color:#2e7d32}
+.sbadge.selesai{background:#e8f5e9;color:#2e7d32}
+.sbadge.batal{background:#ffebee;color:#c62828}
+
+/* PRODUK BADGE */
+.pbadge{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 9px;border-radius:10px}
+.pbadge.aktif{background:var(--green-bg);color:var(--green)}
+.pbadge.nonaktif{background:var(--red-bg);color:var(--red)}
+
+/* ACTION BTNS */
+.act-btn{
+  background:none;border:1px solid var(--border);color:var(--muted);
+  width:30px;height:30px;border-radius:7px;cursor:pointer;
+  display:inline-flex;align-items:center;justify-content:center;font-size:13px;
+  transition:all .2s;
+}
+.act-btn:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+.act-btn.danger:hover{background:#e53935;border-color:#e53935}
+
+/* BTN */
+.btn{
+  border:none;border-radius:10px;padding:9px 18px;font-family:var(--font-body);
+  font-weight:700;font-size:.82rem;cursor:pointer;transition:all .2s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{background:var(--brand-dark)}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:var(--brand);color:var(--brand)}
+.btn-sm{padding:6px 13px;font-size:.76rem}
+
+/* MINI CHART */
+.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px}
+@media(max-width:768px){.chart-grid{grid-template-columns:1fr}}
+
+.chart-card{background:var(--card);border-radius:var(--r);padding:18px;border:1px solid var(--border);box-shadow:var(--shadow)}
+.chart-title{font-family:var(--font-head);font-weight:700;font-size:.92rem;margin-bottom:14px}
+
+/* BAR CHART */
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:100px}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{
+  width:100%;background:linear-gradient(180deg,var(--brand-light),var(--brand));
+  border-radius:6px 6px 0 0;transition:all .4s;min-height:4px;
+}
+.bar-lbl{font-size:.65rem;color:var(--muted);font-weight:600}
+.bar-val{font-size:.68rem;font-weight:700;color:var(--brand)}
+
+/* DONUT */
+.donut-wrap{display:flex;align-items:center;gap:16px}
+.donut-legend{display:flex;flex-direction:column;gap:6px}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:.78rem}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* RECENT ORDERS */
+.recent-grid{display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start}
+@media(max-width:900px){.recent-grid{grid-template-columns:1fr}}
+
+/* PRODUK QUICK */
+.produk-quick{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden}
+.pq-item{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid rgba(240,208,218,.4);transition:background .15s}
+.pq-item:last-child{border-bottom:none}
+.pq-item:hover{background:var(--accent3)}
+.pq-thumb{width:42px;height:42px;border-radius:10px;background:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.pq-name{font-size:.82rem;font-weight:600;margin-bottom:2px}
+.pq-sub{font-size:.72rem;color:var(--muted)}
+.pq-price{font-family:var(--font-head);font-size:.88rem;font-weight:700;color:var(--brand);margin-left:auto;white-space:nowrap}
+.pq-stok{font-size:.68rem;margin-top:2px;text-align:right}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:.8rem;color:var(--muted)}
+.pg-btns{display:flex;gap:5px}
+.pg-btn{width:30px;height:30px;border:1px solid var(--border);background:var(--bg);border-radius:7px;cursor:pointer;font-size:.8rem;font-weight:600;color:var(--muted);transition:all .2s}
+.pg-btn:hover,.pg-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:mdIn .25s ease}
+@keyframes mdIn{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
+.modal-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:var(--font-head);font-weight:700;font-size:1.05rem}
+.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+
+/* FORM DALAM MODAL */
+.mform-group{margin-bottom:14px}
+.mform-group label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.mform-control{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:.88rem;color:var(--text);background:var(--bg);transition:all .2s}
+.mform-control:focus{outline:none;border-color:var(--brand);background:#fff;box-shadow:0 0 0 3px rgba(192,57,94,.07)}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--brand-dark);color:#fff;font-size:.82rem;font-weight:600;padding:11px 20px;border-radius:12px;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;min-width:200px;box-shadow:var(--shadow-lg)}
+.toast.show{opacity:1}
+.toast.success{background:#2e7d32}
+.toast.warning{background:#e65100}
+
+/* STOK WARNING */
+.stok-low{color:#e65100;font-weight:700}
+.stok-habis{color:#c62828;font-weight:700}
+.stok-ok{color:#2e7d32}
+
+/* RESPONSIVE */
+@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.content{margin-left:0}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-brand">🌸 Azura <em>Buket</em></div>
+    <div class="sidebar-logo-sub">Panel Admin</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">Utama</div>
+    <div class="nav-item active" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('pesanan')">
+      <span class="nav-icon">🛒</span> Pesanan
+      <span class="nav-badge" id="pendingBadge">3</span>
+    </div>
+
+    <div class="nav-section">Manajemen</div>
+    <div class="nav-item" onclick="showPage('produk')">
+      <span class="nav-icon">🌸</span> Produk
+    </div>
+    <div class="nav-item" onclick="showPage('staf')">
+      <span class="nav-icon">👥</span> Staf
+    </div>
+
+    <div class="nav-section">Laporan</div>
+    <div class="nav-item" onclick="showPage('laporan')">
+      <span class="nav-icon">📈</span> Laporan Penjualan
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="admin-avatar">AZ</div>
+    <div>
+      <div class="admin-name">Admin Azura</div>
+      <div class="admin-role">Super Admin</div>
+    </div>
+    <button class="logout-btn" onclick="if(confirm('Yakin logout?'))window.location.href='index.html'">Logout</button>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button style="display:none;background:none;border:none;font-size:22px;cursor:pointer" id="menuBtn" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-date" id="topbarDate"></div>
+      <button class="topbar-btn" title="Notifikasi" onclick="showToast('🔔 3 pesanan menunggu konfirmasi!','warning')">
+        🔔 <span class="tb-badge">3</span>
+      </button>
+      <button class="topbar-btn" title="Buka Toko" onclick="window.open('index.html')">🌐</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE: DASHBOARD -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="page active" id="page-dashboard">
+    <div style="padding:0 0 20px">
+      <div style="font-family:var(--font-head);font-size:1.3rem;font-weight:700;margin-bottom:4px" id="greetMsg">Selamat datang kembali! 🌸</div>
+      <div style="font-size:.83rem;color:var(--muted)">Berikut ringkasan toko Azura Buket hari ini.</div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card green">
+        <div class="stat-icon-wrap">💰</div>
+        <div class="stat-lbl">Pendapatan Hari Ini</div>
+        <div class="stat-val">Rp 1,24 jt</div>
+        <div class="stat-change up">↑ 18% vs kemarin</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-icon-wrap">🛒</div>
+        <div class="stat-lbl">Pesanan Masuk</div>
+        <div class="stat-val">14</div>
+        <div class="stat-change up">↑ 3 pesanan baru</div>
+      </div>
+      <div class="stat-card orange">
+        <div class="stat-icon-wrap">⏳</div>
+        <div class="stat-lbl">Pesanan Pending</div>
+        <div class="stat-val" id="pendingCount">3</div>
+        <div class="stat-change" style="color:var(--orange)">Perlu dikonfirmasi</div>
+      </div>
+      <div class="stat-card pink">
+        <div class="stat-icon-wrap">💐</div>
+        <div class="stat-lbl">Produk Aktif</div>
+        <div class="stat-val">16</div>
+        <div class="stat-change" style="color:var(--muted)">2 stok menipis</div>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">📊 Penjualan 7 Hari Terakhir</div>
+        <div class="bar-chart" id="barChart"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px;font-size:.72rem;color:var(--muted)">
+          <span>Total minggu ini: <strong style="color:var(--brand)">Rp 5,8 jt</strong></span>
+          <span>Tren: <strong style="color:#2e7d32">↑ 12%</strong></span>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🍩 Kategori Terlaris</div>
+        <div class="donut-wrap">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle cx="45" cy="45" r="36" fill="none" stroke="#f0d0da" stroke-width="16"/>
+            <circle cx="45" cy="45" r="36" fill="none" stroke="var(--brand)" stroke-width="16" stroke-dasharray="113 113" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <circle cx="45" cy="45" r="36" fill="none" stroke="var(--brand-light)" stroke-width="16" stroke-dasharray="56 170" stroke-dashoffset="-113" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <circle cx="45" cy="45" r="36" fill="none" stroke="#e8f5e9" stroke-width="16" stroke-dasharray="28 198" stroke-dashoffset="-169" stroke-linecap="round" transform="rotate(-90 45 45)"/>
+            <text x="45" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="var(--brand)" font-family="Playfair Display">50%</text>
+          </svg>
+          <div class="donut-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--brand)"></div> Wisuda (50%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--brand-light)"></div> Mawar (25%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#e8f5e9;border:1px solid var(--green)"></div> Snack (13%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div> Lainnya (12%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECENT & PRODUK -->
+    <div class="recent-grid">
+      <div>
+        <div class="section-hd">
+          <div class="section-title">Pesanan Terbaru</div>
+          <button class="btn btn-outline btn-sm" onclick="showPage('pesanan')">Lihat Semua →</button>
+        </div>
+        <div class="tbl-wrap">
+          <table id="recentOrdersTable"></table>
+        </div>
+      </div>
+      <div>
+        <div class="section-hd">
+          <div class="section-title">Stok Menipis</div>
+          <button class="btn btn-outline btn-sm" onclick="showPage('produk')">Kelola →</button>
+        </div>
+        <div class="produk-quick" id="stokMenipis"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE: PESANAN -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="page" id="page-pesanan">
+    <div style="margin-bottom:20px">
+      <div class="section-hd">
+        <div class="section-title">Manajemen Pesanan</div>
+        <div style="display:flex;gap:8px">
+          <select class="btn btn-outline btn-sm" id="filterStatus" onchange="renderPesananTable()" style="cursor:pointer">
+            <option value="">Semua Status</option>
+            <option value="menunggu">Menunggu</option>
+            <option value="diproses">Diproses</option>
+            <option value="dikirim">Dikirim</option>
+            <option value="selesai">Selesai</option>
+            <option value="batal">Dibatalkan</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+        </div>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-toolbar">
+        <div class="tbl-search">
+          <span>🔍</span>
+          <input type="text" id="searchPesanan" placeholder="Cari nama / no. pesanan..." oninput="renderPesananTable()">
+        </div>
+        <div style="font-size:.8rem;color:var(--muted)" id="pesananInfo"></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="pesananTable">
+          <thead><tr>
+            <th>No. Pesanan</th>
+            <th>Nama</th>
+            <th>Produk</th>
+            <th>Total</th>
+            <th>Metode</th>
+            <th>Status</th>
+            <th>Waktu</th>
+            <th>Aksi</th>
+          </tr></thead>
+          <tbody id="pesananTbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span id="pgInfo">Menampilkan 1-10 dari 24 data</span>
+        <div class="pg-btns">
+          <button class="pg-btn active">1</button>
+          <button class="pg-btn">2</button>
+          <button class="pg-btn">3</button>
+          <button class="pg-btn">›</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE: PRODUK -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="page" id="page-produk">
+    <div class="section-hd" style="margin-bottom:18px">
+      <div class="section-title">Manajemen Produk</div>
+      <button class="btn btn-primary" onclick="openTambahProduk()">➕ Tambah Produk</button>
+    </div>
+    <div class="tbl-wrap">
+      <div class="tbl-toolbar">
+        <div class="tbl-search">
+          <span>🔍</span>
+          <input type="text" id="searchProduk" placeholder="Cari produk..." oninput="renderProdukTable()">
+        </div>
+        <select class="btn btn-outline btn-sm" id="filterKat" onchange="renderProdukTable()" style="cursor:pointer">
+          <option value="">Semua Kategori</option>
+          <option>Mawar</option><option>Wisuda</option><option>Money Buket</option>
+          <option>Snack Buket</option><option>Sunflower</option><option>Anniversary</option>
+          <option>Baby Shower</option><option>Tulip</option><option>Valentine</option><option>Custom</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr>
+            <th>Produk</th>
+            <th>Kategori</th>
+            <th>Harga</th>
+            <th>Stok</th>
+            <th>Terjual</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr></thead>
+          <tbody id="produkTbody"></tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span>Menampilkan semua <strong id="produkTotal"></strong> produk</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE: STAF -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="page" id="page-staf">
+    <div class="section-hd" style="margin-bottom:18px">
+      <div class="section-title">Manajemen Staf</div>
+      <button class="btn btn-primary" onclick="showToast('Fitur tambah staf segera hadir! 🌸')">➕ Tambah Staf</button>
+    </div>
+    <div class="tbl-wrap">
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Nama</th><th>Username</th><th>Role</th><th>Bergabung</th><th>Status</th><th>Aksi</th></tr></thead>
+          <tbody>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;background:var(--accent2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:var(--brand)">AZ</div>Azura Rahmawati</div></td><td>azura_admin</td><td><span class="sbadge selesai">Admin</span></td><td>Jan 2024</td><td><span class="pbadge aktif">Aktif</span></td><td><button class="act-btn" onclick="showToast('Edit staf')">✏️</button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;background:#e3f2fd;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#1565c0">SR</div>Sari Dewi</div></td><td>sari_staf</td><td><span class="sbadge diproses">Staf</span></td><td>Mar 2024</td><td><span class="pbadge aktif">Aktif</span></td><td><button class="act-btn" onclick="showToast('Edit staf')">✏️</button> <button class="act-btn danger" onclick="showToast('Nonaktifkan staf?')">🗑</button></td></tr>
+            <tr><td><div style="display:flex;align-items:center;gap:8px"><div style="width:32px;height:32px;background:#e8f5e9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:700;color:#2e7d32">RN</div>Rina Sari</div></td><td>rina_staf</td><td><span class="sbadge diproses">Staf</span></td><td>Jun 2024</td><td><span class="pbadge aktif">Aktif</span></td><td><button class="act-btn" onclick="showToast('Edit staf')">✏️</button> <button class="act-btn danger">🗑</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════ -->
+  <!-- PAGE: LAPORAN -->
+  <!-- ═══════════════════════════════════════ -->
+  <div class="page" id="page-laporan">
+    <div style="margin-bottom:20px">
+      <div class="section-hd">
+        <div class="section-title">Laporan Penjualan</div>
+        <div style="display:flex;gap:8px">
+          <select class="btn btn-outline btn-sm" id="laporanPeriod" onchange="updateLaporan()" style="cursor:pointer">
+            <option value="7">7 Hari Terakhir</option>
+            <option value="30" selected>30 Hari Terakhir</option>
+            <option value="90">3 Bulan</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="showToast('📥 Mengunduh laporan...')">📥 Download PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card green"><div class="stat-icon-wrap">💰</div><div class="stat-lbl">Total Pendapatan</div><div class="stat-val" id="lp_pendapatan">Rp 18,4 jt</div><div class="stat-change up">↑ vs periode sebelumnya</div></div>
+      <div class="stat-card blue"><div class="stat-icon-wrap">📦</div><div class="stat-lbl">Total Pesanan</div><div class="stat-val" id="lp_pesanan">142</div><div class="stat-change up">↑ 14 pesanan</div></div>
+      <div class="stat-card orange"><div class="stat-icon-wrap">🌸</div><div class="stat-lbl">Produk Terjual</div><div class="stat-val" id="lp_produk">368</div><div class="stat-change up">↑ Tren positif</div></div>
+      <div class="stat-card pink"><div class="stat-icon-wrap">⭐</div><div class="stat-lbl">Rating Rata-rata</div><div class="stat-val">4.8</div><div class="stat-change up">↑ Kepuasan tinggi</div></div>
+    </div>
+
+    <div class="tbl-wrap" style="margin-top:20px">
+      <div class="tbl-toolbar">
+        <div style="font-family:var(--font-head);font-weight:700;font-size:.92rem">📊 Tabel Transaksi</div>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="laporanTable">
+          <thead><tr><th>No. Pesanan</th><th>Nama</th><th>Total</th><th>Metode</th><th>Status</th><th>Tanggal</th></tr></thead>
+          <tbody id="laporanTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /content -->
+
+<!-- MODAL TAMBAH/EDIT PRODUK -->
+<div class="modal-overlay" id="modalProduk" onclick="closeModal(event)">
+  <div class="modal" id="modalProdukBox" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title" id="modalProdukTitle">➕ Tambah Produk</div>
+      <button class="modal-close" onclick="closeModalProduk()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mform-group">
+        <label>Nama Produk *</label>
+        <input type="text" class="mform-control" id="mp_nama" placeholder="Nama produk">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="mform-group">
+          <label>Harga (Rp) *</label>
+          <input type="number" class="mform-control" id="mp_harga" placeholder="85000">
+        </div>
+        <div class="mform-group">
+          <label>Stok *</label>
+          <input type="number" class="mform-control" id="mp_stok" placeholder="10">
+        </div>
+      </div>
+      <div class="mform-group">
+        <label>Kategori</label>
+        <select class="mform-control" id="mp_kat">
+          <option>Mawar</option><option>Wisuda</option><option>Money Buket</option>
+          <option>Snack Buket</option><option>Sunflower</option><option>Anniversary</option>
+          <option>Baby Shower</option><option>Tulip</option><option>Valentine</option><option>Custom</option>
+        </select>
+      </div>
+      <div class="mform-group">
+        <label>Deskripsi</label>
+        <textarea class="mform-control" id="mp_desc" rows="3" placeholder="Deskripsi singkat produk..."></textarea>
+      </div>
+      <div class="mform-group">
+        <label>Upload Gambar</label>
+        <input type="file" class="mform-control" id="mp_gambar" accept="image/*">
+        <div style="font-size:.72rem;color:var(--muted);margin-top:4px">Format: JPG, PNG. Maks 2MB.</div>
+      </div>
+      <div class="mform-group">
+        <label>Status</label>
+        <select class="mform-control" id="mp_status">
+          <option value="aktif">Aktif</option>
+          <option value="nonaktif">Nonaktif</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModalProduk()">Batal</button>
+      <button class="btn btn-primary" onclick="saveProduk()">💾 Simpan Produk</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DETAIL PESANAN -->
+<div class="modal-overlay" id="modalPesanan" onclick="closePesananModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">📦 Detail Pesanan</div>
+      <button class="modal-close" onclick="closePesananModal()">✕</button>
+    </div>
+    <div class="modal-body" id="pesananDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closePesananModal()">Tutup</button>
+      <button class="btn btn-primary" onclick="konfirmasiPesanan()">✅ Konfirmasi & Proses</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────
+const PRODUK_DATA = [
+  {id:1,nama:'Buket Mawar Merah Premium',kategori:'Mawar',harga:95000,stok:12,terjual:234,emoji:'🌹',status:'aktif'},
+  {id:2,nama:'Buket Wisuda Mewah Ungu',kategori:'Wisuda',harga:145000,stok:8,terjual:189,emoji:'🎓',status:'aktif'},
+  {id:3,nama:'Money Buket Uang 50rb',kategori:'Money Buket',harga:175000,stok:15,terjual:156,emoji:'💵',status:'aktif'},
+  {id:4,nama:'Snack Buket Mini Mix',kategori:'Snack Buket',harga:85000,stok:20,terjual:312,emoji:'🍫',status:'aktif'},
+  {id:5,nama:'Buket Sunflower Cerah',kategori:'Sunflower',harga:110000,stok:3,terjual:98,emoji:'🌻',status:'aktif'},
+  {id:6,nama:'Buket Anniversary Pink',kategori:'Anniversary',harga:135000,stok:10,terjual:201,emoji:'💑',status:'aktif'},
+  {id:7,nama:'Baby Shower Buket Cute',kategori:'Baby Shower',harga:125000,stok:2,terjual:87,emoji:'🍼',status:'aktif'},
+  {id:8,nama:'Buket Tulip Korea Style',kategori:'Tulip',harga:155000,stok:9,terjual:143,emoji:'🌷',status:'aktif'},
+  {id:9,nama:'Valentine Rose Bouquet',kategori:'Valentine',harga:185000,stok:0,terjual:267,emoji:'💝',status:'aktif'},
+  {id:10,nama:'Custom Buket Eksklusif',kategori:'Custom',harga:200000,stok:999,terjual:78,emoji:'✨',status:'aktif'},
+];
+
+const STATUS_LIST = ['menunggu','diproses','dikirim','selesai'];
+const METODE_LIST = ['Transfer Bank','BCA','BRI','QRIS','GoPay','COD'];
+
+let pesananData = generatePesanan();
+
+function generatePesanan() {
+  const names = ['Anisa Rahmawati','Budi Santoso','Citra Melati','Desi Pratiwi','Eko Purnomo','Fitri Handayani','Gilang Satria','Hana Permata'];
+  const prods = ['Buket Mawar Merah','Buket Wisuda Ungu','Money Buket 50rb','Snack Buket Mini','Valentine Rose'];
+  const arr = [];
+  for (let i = 0; i < 24; i++) {
+    const d = new Date(Date.now() - i * 3600000 * 8);
+    arr.push({
+      no: 'AZ-' + (Date.now()-i*99999).toString(36).toUpperCase().slice(-6),
+      nama: names[i%names.length],
+      hp: '0812-' + String(Math.floor(Math.random()*90000000+10000000)).slice(0,8),
+      produk: prods[i%prods.length] + (i%3===0 ? ' (×2)' : ''),
+      total: (Math.floor(Math.random()*5)+1) * (Math.floor(Math.random()*150+50)*1000),
+      metode: METODE_LIST[i%METODE_LIST.length],
+      status: i < 3 ? 'menunggu' : STATUS_LIST[Math.floor(Math.random()*4)],
+      alamat: 'Jl. Contoh No.' + (i+1) + ', Cirebon',
+      catatan: i%3===0 ? 'Tambah kartu ucapan 💕' : '',
+      waktu: d.toLocaleString('id-ID',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}),
+    });
+  }
+  return arr;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  setDate();
+  setGreeting();
+  renderBarChart();
+  renderRecentOrders();
+  renderStokMenipis();
+  renderPesananTable();
+  renderProdukTable();
+  renderLaporan();
+});
+
+function setDate() {
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+}
+
+function setGreeting() {
+  const h = new Date().getHours();
+  const g = h < 11 ? 'Selamat pagi' : h < 15 ? 'Selamat siang' : h < 18 ? 'Selamat sore' : 'Selamat malam';
+  document.getElementById('greetMsg').textContent = g + ', Admin Azura! 🌸';
+}
+
+// ─── NAVIGATION ───────────────────────────────────────────────────
+const PAGE_TITLES = {dashboard:'Dashboard',pesanan:'Manajemen Pesanan',produk:'Manajemen Produk',staf:'Manajemen Staf',laporan:'Laporan Penjualan'};
+
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event?.target?.closest('.nav-item')?.classList.add('active');
+  document.getElementById('pageTitle').textContent = PAGE_TITLES[p] || p;
+  if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('open');
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// ─── BAR CHART ────────────────────────────────────────────────────
+function renderBarChart() {
+  const data = [380,540,290,720,650,430,810];
+  const days = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+  const max = Math.max(...data);
+  document.getElementById('barChart').innerHTML = data.map((v,i) => {
+    const pct = (v/max*88);
+    return `<div class="bar-item">
+      <div class="bar-val">${v}k</div>
+      <div class="bar" style="height:${pct}px"></div>
+      <div class="bar-lbl">${days[i]}</div>
+    </div>`;
+  }).join('');
+}
+
+// ─── RECENT ORDERS ────────────────────────────────────────────────
+function renderRecentOrders() {
+  const recent = pesananData.slice(0,5);
+  document.getElementById('recentOrdersTable').innerHTML = `
+    <thead><tr><th>No. Pesanan</th><th>Nama</th><th>Total</th><th>Status</th></tr></thead>
+    <tbody>${recent.map(o => `
+      <tr style="cursor:pointer" onclick="viewPesanan('${o.no}')">
+        <td style="font-family:var(--font-head);font-weight:700;color:var(--brand)">${o.no}</td>
+        <td>${o.nama}</td>
+        <td>Rp ${o.total.toLocaleString('id-ID')}</td>
+        <td><span class="sbadge ${o.status}">${o.status}</span></td>
+      </tr>`).join('')}
+    </tbody>`;
+}
+
+// ─── STOK MENIPIS ─────────────────────────────────────────────────
+function renderStokMenipis() {
+  const low = PRODUK_DATA.filter(p => p.stok <= 5).slice(0,4);
+  document.getElementById('stokMenipis').innerHTML = low.map(p => `
+    <div class="pq-item">
+      <div class="pq-thumb">${p.emoji}</div>
+      <div style="flex:1">
+        <div class="pq-name">${p.nama}</div>
+        <div class="pq-sub">${p.kategori}</div>
+      </div>
+      <div>
+        <div class="pq-price">Rp ${p.harga.toLocaleString('id-ID')}</div>
+        <div class="pq-stok ${p.stok===0?'stok-habis':p.stok<=3?'stok-low':'stok-ok'}">
+          ${p.stok===0?'❌ Habis':'⚠️ Sisa ' + p.stok}
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ─── PESANAN TABLE ────────────────────────────────────────────────
+function renderPesananTable() {
+  const q = document.getElementById('searchPesanan')?.value?.toLowerCase() || '';
+  const st = document.getElementById('filterStatus')?.value || '';
+  let list = pesananData.filter(o =>
+    (!q || o.no.toLowerCase().includes(q) || o.nama.toLowerCase().includes(q)) &&
+    (!st || o.status === st)
+  );
+  document.getElementById('pesananInfo').textContent = list.length + ' pesanan ditemukan';
+  document.getElementById('pesananTbody').innerHTML = list.map(o => `
+    <tr>
+      <td style="font-family:var(--font-head);font-weight:700;color:var(--brand);cursor:pointer" onclick="viewPesanan('${o.no}')">${o.no}</td>
+      <td><div style="font-weight:600">${o.nama}</div><div style="font-size:.72rem;color:var(--muted)">${o.hp}</div></td>
+      <td>${o.produk}</td>
+      <td style="font-weight:700">Rp ${o.total.toLocaleString('id-ID')}</td>
+      <td>${o.metode}</td>
+      <td><span class="sbadge ${o.status}">${o.status}</span></td>
+      <td style="font-size:.78rem;color:var(--muted)">${o.waktu}</td>
+      <td>
+        <button class="act-btn" onclick="viewPesanan('${o.no}')" title="Detail">👁</button>
+        <button class="act-btn" onclick="ubahStatus('${o.no}')" title="Update Status">🔄</button>
+        <a href="https://wa.me/${o.hp.replace(/\D/g,'').replace(/^0/,'62')}?text=Halo!%20Pesanan%20${o.no}%20sedang%20diproses%20🌸" target="_blank"><button class="act-btn" title="WA">📱</button></a>
+      </td>
+    </tr>`).join('');
+}
+
+function viewPesanan(no) {
+  const o = pesananData.find(x => x.no === no);
+  if (!o) return;
+  document.getElementById('pesananDetailBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:var(--accent3);padding:12px;border-radius:10px">
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:3px">No. Pesanan</div>
+        <div style="font-family:var(--font-head);font-weight:700;color:var(--brand)">${o.no}</div>
+      </div>
+      <div style="background:var(--accent3);padding:12px;border-radius:10px">
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:3px">Status</div>
+        <span class="sbadge ${o.status}">${o.status}</span>
+      </div>
+    </div>
+    <div style="font-size:.83rem;display:flex;flex-direction:column;gap:8px">
+      <div><strong>👤 Nama:</strong> ${o.nama}</div>
+      <div><strong>📱 No. HP:</strong> ${o.hp}</div>
+      <div><strong>📦 Produk:</strong> ${o.produk}</div>
+      <div><strong>💰 Total:</strong> <span style="color:var(--brand);font-weight:700">Rp ${o.total.toLocaleString('id-ID')}</span></div>
+      <div><strong>💳 Metode:</strong> ${o.metode}</div>
+      <div><strong>📍 Alamat:</strong> ${o.alamat}</div>
+      ${o.catatan ? `<div style="background:var(--accent2);padding:10px;border-radius:8px"><strong>📝 Catatan:</strong> ${o.catatan}</div>` : ''}
+      <div><strong>🕐 Waktu:</strong> ${o.waktu}</div>
+    </div>
+    <div style="margin-top:14px">
+      <label style="display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase">Update Status</label>
+      <select class="mform-control" id="newStatus">
+        ${STATUS_LIST.map(s => `<option value="${s}" ${o.status===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+    </div>`;
+  document.getElementById('modalPesanan').classList.add('show');
+  document.getElementById('modalPesanan').dataset.no = no;
+}
+
+function ubahStatus(no) { viewPesanan(no); }
+
+function konfirmasiPesanan() {
+  const no = document.getElementById('modalPesanan').dataset.no;
+  const newSt = document.getElementById('newStatus')?.value;
+  const o = pesananData.find(x => x.no === no);
+  if (o && newSt) {
+    o.status = newSt;
+    renderPesananTable();
+    renderRecentOrders();
+    const pending = pesananData.filter(x => x.status === 'menunggu').length;
+    document.getElementById('pendingBadge').textContent = pending;
+    document.getElementById('pendingCount').textContent = pending;
+    showToast('✅ Status pesanan diperbarui ke: ' + newSt, 'success');
+  }
+  closePesananModal();
+}
+
+function closePesananModal(e) {
+  if (e && e.target !== document.getElementById('modalPesanan')) return;
+  document.getElementById('modalPesanan').classList.remove('show');
+}
+
+// ─── PRODUK TABLE ─────────────────────────────────────────────────
+function renderProdukTable() {
+  const q = document.getElementById('searchProduk')?.value?.toLowerCase() || '';
+  const kat = document.getElementById('filterKat')?.value || '';
+  let list = PRODUK_DATA.filter(p =>
+    (!q || p.nama.toLowerCase().includes(q)) &&
+    (!kat || p.kategori === kat)
+  );
+  document.getElementById('produkTotal').textContent = list.length;
+  document.getElementById('produkTbody').innerHTML = list.map(p => `
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:10px">
+        <div style="width:40px;height:40px;background:var(--accent2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem">${p.emoji}</div>
+        <div><div style="font-weight:600;font-size:.85rem">${p.nama}</div><div style="font-size:.72rem;color:var(--muted)">ID: #${p.id}</div></div>
+      </div></td>
+      <td>${p.kategori}</td>
+      <td style="font-family:var(--font-head);font-weight:700;color:var(--brand)">Rp ${p.harga.toLocaleString('id-ID')}</td>
+      <td class="${p.stok===0?'stok-habis':p.stok<=5?'stok-low':'stok-ok'}">${p.stok===0?'❌ Habis':p.stok<=5?'⚠️ '+p.stok:'✅ '+p.stok}</td>
+      <td>${p.terjual}</td>
+      <td><span class="pbadge ${p.status}">${p.status}</span></td>
+      <td>
+        <button class="act-btn" onclick="editProduk(${p.id})" title="Edit">✏️</button>
+        <button class="act-btn danger" onclick="hapusProduk(${p.id})" title="Hapus">🗑</button>
+      </td>
+    </tr>`).join('');
+}
+
+function openTambahProduk() {
+  document.getElementById('modalProdukTitle').textContent = '➕ Tambah Produk';
+  document.getElementById('mp_nama').value = '';
+  document.getElementById('mp_harga').value = '';
+  document.getElementById('mp_stok').value = '';
+  document.getElementById('mp_desc').value = '';
+  document.getElementById('modalProduk').classList.add('show');
+}
+
+function editProduk(id) {
+  const p = PRODUK_DATA.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('modalProdukTitle').textContent = '✏️ Edit Produk';
+  document.getElementById('mp_nama').value = p.nama;
+  document.getElementById('mp_harga').value = p.harga;
+  document.getElementById('mp_stok').value = p.stok;
+  document.getElementById('mp_kat').value = p.kategori;
+  document.getElementById('modalProduk').classList.add('show');
+}
+
+function hapusProduk(id) {
+  if (confirm('Hapus produk ini?')) showToast('🗑 Produk dihapus', 'warning');
+}
+
+function saveProduk() {
+  const nama = document.getElementById('mp_nama').value.trim();
+  const harga = document.getElementById('mp_harga').value;
+  const stok = document.getElementById('mp_stok').value;
+  if (!nama || !harga || !stok) { showToast('⚠️ Lengkapi semua field wajib!', 'warning'); return; }
+  closeModalProduk();
+  showToast('✅ Produk berhasil disimpan!', 'success');
+  renderProdukTable();
+}
+
+function closeModalProduk() { document.getElementById('modalProduk').classList.remove('show'); }
+
+function closeModal(e) {
+  if (e && e.target === document.getElementById('modalProduk')) closeModalProduk();
+}
+
+// ─── LAPORAN ──────────────────────────────────────────────────────
+function renderLaporan() {
+  document.getElementById('laporanTbody').innerHTML = pesananData.filter(o => o.status !== 'batal').slice(0,15).map(o => `
+    <tr>
+      <td style="font-family:var(--font-head);font-weight:700;color:var(--brand)">${o.no}</td>
+      <td>${o.nama}</td>
+      <td style="font-weight:700">Rp ${o.total.toLocaleString('id-ID')}</td>
+      <td>${o.metode}</td>
+      <td><span class="sbadge ${o.status}">${o.status}</span></td>
+      <td style="font-size:.78rem;color:var(--muted)">${o.waktu}</td>
+    </tr>`).join('');
+}
+
+function updateLaporan() { showToast('📊 Laporan diperbarui!', 'success'); }
+
+function exportCSV() {
+  const rows = [['No. Pesanan','Nama','Total','Metode','Status','Waktu']];
+  pesananData.forEach(o => rows.push([o.no, o.nama, o.total, o.metode, o.status, o.waktu]));
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv,' + encodeURIComponent(csv);
+  a.download = 'pesanan_azura_buket.csv';
+  a.click();
+  showToast('📥 CSV berhasil diunduh!', 'success');
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, type) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
